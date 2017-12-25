@@ -55,7 +55,6 @@ type FilterData []struct {
 }
 
 type Params struct {
-  //ORDER_BY []string `json:"ORDER BY"`
   ORDER_BY JsonArray `json:"ORDER BY"`
   DESC string `json:"DESC"`
   LIMIT string `json:"LIMIT"`
@@ -66,7 +65,6 @@ type JsonArray []string
 
 func SearchLocation(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
   start := true
-  //startsd := "dd"
   r.ParseForm()
   data := r.FormValue("data")
   var jd JsonData

@@ -12,7 +12,7 @@ To start using "select_db_microservice" you need:
 
     When constructing your own microservice, use them in the following way, for example:
 
-    Use ssdomain.SSDomain(AccessDbPatch)
+    Use select_db_microservice.SelectDb(AccessDbPatch)
 
     Structure POST data:
 

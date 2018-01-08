@@ -27,27 +27,27 @@ var log = logging.MustGetLogger("sql")
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 /* Structe POST data. */
-type JsonData struct {
-  Tables Tables `json:"tables"`
-  Filters Filter `json:"filters"`
-  Fields JsonArray `json:"fields"`
-  Params Params `json:"params"`
+type jsonData struct {
+  Tables tables `json:"tables"`
+  Filters filter `json:"filters"`
+  Fields jsonArray `json:"fields"`
+  Params params `json:"params"`
 }
 
 /* Structe POST data field tables. */
-type Tables struct {
-  Origin TablesOrigin `json:"origin"`
-  Join TablesJoin `json:"join"`
+type tables struct {
+  Origin tablesOrigin `json:"origin"`
+  Join tablesJoin `json:"join"`
 }
 
 /* Structe POST data field table origin. */
-type TablesOrigin struct {
+type tablesOrigin struct {
   Table string `json:"table"`
   Alias string `json:"alias"`
 }
 
 /* Structe POST data field table Join. */
-type TablesJoin []struct {
+type tablesJoin []struct {
   Table string `json:"table"`
   Name string `json:"name"`
   Alias string `json:"alias"`
@@ -56,33 +56,33 @@ type TablesJoin []struct {
 }
 
 /* Structe POST data field filter. */
-type Filter struct {
-  And FilterData `json:"and"`
-  Or FilterData `json:"or"`
+type filter struct {
+  And filterData `json:"and"`
+  Or filterData `json:"or"`
 }
 
 /* Structe POST data field filter value. */
-type FilterData []struct {
+type filterData []struct {
   Column string `json:"column"`
-  Val JsonArray `json:"val"`
+  Val jsonArray `json:"val"`
   Operator string `json:"operator"`
 }
 
 /* Structe POST data field paranetrs. */
-type Params struct {
-  Order Order `json:"order"`
-  Group JsonArray `json:"group"`
+type params struct {
+  Order order `json:"order"`
+  Group jsonArray `json:"group"`
   Limit string `json:"limit"`
 }
 
 /* Structe POST data field orders. */
-type Order struct {
-  Fields JsonArray `json:"fields"`
-  Sort JsonArray `json:"sort"`
+type order struct {
+  Fields jsonArray `json:"fields"`
+  Sort jsonArray `json:"sort"`
 }
 
 /* Type array. */
-type JsonArray []string
+type jsonArray []string
 
 /* Generate first level array. */
 func result() (r map[string]interface{}) {
@@ -95,12 +95,12 @@ func results() (rs map[string]map[string]interface{}) {
 }
 
 /* Load DB content values. */
-func SSDomain(AccessDbPatch string)  httprouter.Handle {
+func SelectDb(AccessDbPatch string)  httprouter.Handle {
   return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
     start := true
     r.ParseForm()
     data := r.FormValue("data")
-    var jd JsonData
+    var jd jsonData
     err := json.Unmarshal([]byte(data), &jd)
     if err != nil {
       start = false
@@ -184,7 +184,7 @@ func loadError() {
 }
 
 /* Generate sql with POST data field table. */
-func loadTableValue(jd TablesOrigin, er int) (string, string) {
+func loadTableValue(jd tablesOrigin, er int) (string, string) {
   if jd.Table == "" {
     return "", loadDataMessage("No area origin table!", er)
   } else if jd.Alias == "" {
@@ -195,7 +195,7 @@ func loadTableValue(jd TablesOrigin, er int) (string, string) {
 }
 
 /* Generate sql with POST data field table data. */
-func loadFieldsValue(jd JsonArray, er int) (string, string) {
+func loadFieldsValue(jd jsonArray, er int) (string, string) {
   fields := ""
   for index, element := range jd {
     if index == 0 {
@@ -211,7 +211,7 @@ func loadFieldsValue(jd JsonArray, er int) (string, string) {
 }
 
 /* Generate sql with POST data field param. */
-func loadParamsValue(jd Params, er int) (string, string) {
+func loadParamsValue(jd params, er int) (string, string) {
   data, sort, group := "", "", ""
   if len(jd.Order.Fields) > 0 {
     for index, element := range jd.Order.Fields {
@@ -245,7 +245,7 @@ func loadParamsValue(jd Params, er int) (string, string) {
 }
 
 /* Generate sql with POST data field filters. */
-func loadWhere(jd FilterData, ident string, er int) (string, string) {
+func loadWhere(jd filterData, ident string, er int) (string, string) {
   data, sqlv, operator := "", "", ""
   for index, element := range jd {
     if element.Column == "" {

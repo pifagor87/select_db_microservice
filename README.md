@@ -2,10 +2,15 @@
 For DB works, we use a lightweight high-performance DB driver pgx.
 To start using "select_db_microservice" you need:
 * Install and configure the latest version of Golang
+* Be sure to modify the data access data in the connect_db.json to more complex.
+* Move the connect_db.json file to a secure location on the server. Provide the necessary access rights.
+
+    Add const AccessDbPatch string = "./connect_db.json". It is access connect DB.
+   In file main.go, specify the correct path to the file connect_db.json. Replace "./connect_db.json" with the desired path to the file.
 * go get github.com/pifagor87/select_db_microservice
 * To use "select_db_microservice", add in import - "github.com/pifagor87/select_db_microservice".
-When constructing your own microservice, use them in the following way, for example:
-    Add const AccessDbPatch string = "connect_db.json". It is access connect DB.
+
+    When constructing your own microservice, use them in the following way, for example:
 
     Use ssdomain.SSDomain(AccessDbPatch)
 

@@ -90,7 +90,12 @@ func result() (r map[string]interface{}) {
 }
 
 /* Generate second level array. */
-func results() (rs map[string]map[string]interface{}) {
+func resultData() (rs map[int]map[string]interface{}) {
+  return make(map[int]map[string]interface{})
+}
+
+/* Generate second level error array. */
+func resultError() (rs map[string]map[string]interface{}) {
   return make(map[string]map[string]interface{})
 }
 
@@ -146,26 +151,28 @@ func SelectDb(AccessDbPatch string)  httprouter.Handle {
       }
       defer rows.Close()
       cols := rows.FieldDescriptions()
+      rs := resultData()
+      id := 0
       for rows.Next() {
         rowValues, err := rows.Values()
         if err != nil {
           log.Fatal(err)
         }
         m := result()
-        rs := results()
         for i, col := range rowValues {
           if cols[i].Name != "" {
             m[cols[i].Name] = col;
           }
         }
-        rs["data"] = m
-        result, err1 := json.Marshal(rs)
-        if err1 != nil {
-          er := loadDataMessage("Json result data error!", errc7)
-          w.Write([]byte(er))
-        }
-        w.Write([]byte(string(result)))
+        rs[id] = m
+        id++
       }
+      result, err1 := json.Marshal(rs)
+      if err1 != nil {
+        er := loadDataMessage("Json result data error!", errc7)
+        w.Write([]byte(er))
+      }
+      w.Write([]byte(string(result)))
     }
   }
 }
@@ -290,7 +297,7 @@ func loadDataMessage(er string, ern int) (string) {
   err := fmt.Sprintf("Error: %d. %s", ern, er)
   log.Error(err)
   r := result()
-  rs := results()
+  rs := resultError()
   r["text"] = err
   r["id"] = ern
   rs["error"] = r
